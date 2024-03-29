@@ -5,6 +5,7 @@ import ayds.songinfo.home.model.entities.Song.EmptySong
 import ayds.songinfo.home.model.entities.Song
 import ayds.songinfo.home.model.entities.Song.SpotifySong
 import java.time.Year
+import java.util.Date
 
 interface SongDescriptionHelper {
     fun getSongDescriptionText(song: Song = EmptySong): String
@@ -25,7 +26,7 @@ internal class SongDescriptionHelperImpl : SongDescriptionHelper {
         }
     }
 
-    fun releaseDateString(song: SpotifySong): String {
+    private fun releaseDateString(song: SpotifySong): String {
         return when (song.releaseDatePrecision) {
             "day" -> SimpleDateFormat("dd/MM/yyyy").format(SimpleDateFormat("yyyy-MM-dd").parse(song.releaseDate))
             "month" -> SimpleDateFormat("MMMM, yyyy").format(SimpleDateFormat("yyyy-MM").parse(song.releaseDate))
@@ -34,7 +35,7 @@ internal class SongDescriptionHelperImpl : SongDescriptionHelper {
         }
     }
 
-    fun toYearLeapOrNotFormat(year: Long): String {
+    private fun toYearLeapOrNotFormat(year: Long): String {
         return "$year (${if (Year.isLeap(year)) "" else "Not a "}leap year)"
     }
 }

@@ -21,7 +21,7 @@ object HomeModelInjector {
         val dataBase = Room.databaseBuilder(
             homeView as Context,
             SongDatabase::class.java, "song-database"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
 
         val spotifyLocalRoomStorage: SpotifyLocalStorage = SpotifyLocalStorageRoomImpl(dataBase)
 

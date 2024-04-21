@@ -90,6 +90,20 @@ class OtherInfoWindow : Activity() {
         return getArticleFromJson(callResponse, artistName)
     }
 
+    private fun getJsonFromService(artistName: String): Response<String> {
+        val callResponse = createLastFMAPI().getArtistInfo(artistName).execute()
+        Log.e("TAG", "JSON " + callResponse.body())
+        return callResponse
+    }
+
+    private fun createLastFMAPI(): LastFMAPI {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://ws.audioscrobbler.com/2.0/")
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+        return retrofit.create(LastFMAPI::class.java)
+    }
+
     private fun getArticleFromJson(callResponse: Response<String>, artistName: String): ArticleEntity {
         val jsonObject = Gson().fromJson(callResponse.body(), JsonObject::class.java)
         val artist = jsonObject["artist"].getAsJsonObject()
@@ -103,20 +117,6 @@ class OtherInfoWindow : Activity() {
             textToHtml(contentString, artistName),
             url.asString
         )
-    }
-
-    private fun getJsonFromService(artistName: String): Response<String> {
-        val callResponse = createLastFMAPI().getArtistInfo(artistName).execute()
-        Log.e("TAG", "JSON " + callResponse.body())
-        return callResponse
-    }
-
-    private fun createLastFMAPI(): LastFMAPI {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://ws.audioscrobbler.com/2.0/")
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .build()
-        return retrofit.create(LastFMAPI::class.java)
     }
 
     private fun saveToDatabase(article : ArticleEntity) {
@@ -136,7 +136,7 @@ class OtherInfoWindow : Activity() {
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
         const val IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
-        fun textToHtml(text: String, term: String?): String {
+        fun textToHtml(text: String, term: String): String {
             val stringBuilder = StringBuilder()
             stringBuilder.append("<html><div width=400>")
             stringBuilder.append("<font face=\"arial\">")
@@ -145,13 +145,13 @@ class OtherInfoWindow : Activity() {
             return stringBuilder.toString()
         }
 
-        private fun getTextWithBold(text: String, term: String?): String {
+        private fun getTextWithBold(text: String, term: String): String {
             text
                 .replace("'", " ")
                 .replace("\n", "<br>")
                 .replace(
                     "(?i)$term".toRegex(),
-                    "<b>" + term!!.uppercase(Locale.getDefault()) + "</b>"
+                    "<b>" + term.uppercase(Locale.getDefault()) + "</b>"
                 )
             return text
         }

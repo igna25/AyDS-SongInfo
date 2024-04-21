@@ -13,56 +13,60 @@ import androidx.room.Room.databaseBuilder
 import androidx.core.text.HtmlCompat
 import ayds.songinfo.R
 import com.google.gson.Gson
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.squareup.picasso.Picasso
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.io.IOException
 import java.util.Locale
 
 class OtherInfoWindow : Activity() {
-    private var textPane1: TextView? = null
-    private var articleDatabase: ArticleDatabase? = null
+    private lateinit var textPane1: TextView
+    private lateinit var articleDatabase: ArticleDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_other_info)
         initTextPane()
-        openArticleDatabase(intent.getStringExtra("artistName"))
+        openArticleDatabase(intent.getStringExtra(ARTIST_NAME_EXTRA) ?: "")
     }
 
     private fun initTextPane() {
         textPane1 = findViewById(R.id.textPane1)
     }
 
-    private fun openArticleDatabase(artist: String?) {
+    private fun openArticleDatabase(artist: String) {
         articleDatabase =
             databaseBuilder(this, ArticleDatabase::class.java, "database-name-thename").build()
-        Thread {
-            articleDatabase!!.ArticleDao().insertArticle(ArticleEntity("test", "sarasa", ""))
-            Log.e("TAG", "" + articleDatabase!!.ArticleDao().getArticleByArtistName("test"))
-            Log.e("TAG", "" + articleDatabase!!.ArticleDao().getArticleByArtistName("nada"))
-        }.start()
-        getArtistInfo(artist!!)
+        testDatabase()
+        getArtistInfo(artist)
     }
 
-    fun getArtistInfo(artistName: String) {
+    private fun testDatabase() {
+        Thread {
+            articleDatabase.ArticleDao().insertArticle(ArticleEntity("test", "sarasa", ""))
+            Log.e("TAG", "" + articleDatabase.ArticleDao().getArticleByArtistName("test"))
+            Log.e("TAG", "" + articleDatabase.ArticleDao().getArticleByArtistName("nada"))
+        }.start()
+    }
+
+    private fun getArtistInfo(artistName: String) {
         Log.e("TAG", "artistName $artistName")
         Thread {
-            val text = s(artistName)
-            val imageUrl =
-                "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
-            Log.e("TAG", "Get Image from $imageUrl")
-            runOnUiThread {
-                Picasso.get().load(imageUrl).into(findViewById<View>(R.id.imageView1) as ImageView)
-                textPane1!!.text = Html.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
-            }
+            updateView(getArticleText(artistName))
         }.start()
     }
 
-    private fun s(artistName: String): String {
-        var article = articleDatabase!!.ArticleDao().getArticleByArtistName(artistName)
+    private fun updateView(text: String) {
+        Log.e("TAG", "Get Image from $IMAGE_URL")
+        runOnUiThread {
+            Picasso.get().load(IMAGE_URL).into(findViewById<View>(R.id.imageView1) as ImageView)
+            textPane1.text = Html.fromHtml(text, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        }
+    }
+
+    private fun getArticleText(artistName: String): String {
+        var article = articleDatabase.ArticleDao().getArticleByArtistName(artistName)
         var text = "[*]"
         if (article == null) {
             article = getFromService(artistName)
@@ -73,33 +77,38 @@ class OtherInfoWindow : Activity() {
         return text
     }
 
-    private fun getFromService(artistName: String?): ArticleEntity{
-        val article = getArticleEntityFromService(artistName!!)
+    private fun getFromService(artistName: String): ArticleEntity{
+        val article = getArticleFromService(artistName)
         if (article.biography != "No Results") {
             saveToDatabase(article)
         }
         return article
     }
 
-    private fun getArticleEntityFromService(artistName: String): ArticleEntity{
-        var content : JsonElement? = null
-        var url : JsonElement? = null
-        try {
-            val lastFMAPI = createLastFMAPI()
-            val callResponse = lastFMAPI.getArtistInfo(artistName).execute()
-            Log.e("TAG", "JSON " + callResponse.body())
-            val gson = Gson()
-            val jsonObject = gson.fromJson(callResponse.body(), JsonObject::class.java)
-            val artist = jsonObject["artist"].getAsJsonObject()
-            val bio = artist["bio"].getAsJsonObject()
-            content = bio["content"]
-            url = artist["url"]
-        } catch (ioException: IOException) {
-            Log.e("TAG", "Error $ioException")
-            ioException.printStackTrace()
-        }
+    private fun getArticleFromService(artistName: String): ArticleEntity{
+        val callResponse = getJsonFromService(artistName)
+        return getArticleFromJson(callResponse, artistName)
+    }
 
-        return ArticleEntity(artistName, textToHtml(content?.asString?.replace("\\n", "\n") ?: "No results",artistName), url?.asString ?: "")
+    private fun getArticleFromJson(callResponse: Response<String>, artistName: String): ArticleEntity {
+        val jsonObject = Gson().fromJson(callResponse.body(), JsonObject::class.java)
+        val artist = jsonObject["artist"].getAsJsonObject()
+        val bio = artist["bio"].getAsJsonObject()
+        val content = bio["content"]
+        val url = artist["url"]
+        val contentString = content.asString.replace("\\n", "\n").ifBlank { "No Results" }
+
+        return ArticleEntity(
+            artistName,
+            textToHtml(contentString, artistName),
+            url.asString
+        )
+    }
+
+    private fun getJsonFromService(artistName: String): Response<String> {
+        val callResponse = createLastFMAPI().getArtistInfo(artistName).execute()
+        Log.e("TAG", "JSON " + callResponse.body())
+        return callResponse
     }
 
     private fun createLastFMAPI(): LastFMAPI {
@@ -112,9 +121,8 @@ class OtherInfoWindow : Activity() {
 
     private fun saveToDatabase(article : ArticleEntity) {
         Thread {
-            articleDatabase!!.ArticleDao().insertArticle(article)
-        }
-            .start()
+            articleDatabase.ArticleDao().insertArticle(article)
+        }.start()
     }
 
     private fun setButtonUrl(article: ArticleEntity) {
@@ -127,6 +135,7 @@ class OtherInfoWindow : Activity() {
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
+        const val IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
         fun textToHtml(text: String, term: String?): String {
             val stringBuilder = StringBuilder()
             stringBuilder.append("<html><div width=400>")

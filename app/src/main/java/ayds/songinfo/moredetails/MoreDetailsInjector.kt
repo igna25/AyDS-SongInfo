@@ -1,6 +1,5 @@
 package ayds.songinfo.moredetails
 
-import android.content.Context
 import androidx.room.Room
 import ayds.songinfo.moredetails.data.ArtistBiographyRepositoryImpl
 import ayds.songinfo.moredetails.data.external.lastFM.LastFMArticleService
@@ -14,7 +13,7 @@ import ayds.songinfo.moredetails.data.local.lastFM.room.LastFMLocalStorageRoomIm
 import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenter
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenterImpl
-import ayds.songinfo.moredetails.presentation.MoreDetailsView
+import ayds.songinfo.moredetails.presentation.MoreDetailsViewActivity
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
@@ -22,7 +21,7 @@ object MoreDetailsInjector {
     private const val ARTICLE_DATABASE_NAME = "database-name-thename"
     private const val LASTFM_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
 
-    private lateinit var moreDetailsView: MoreDetailsView
+    private lateinit var moreDetailsViewActivity: MoreDetailsViewActivity
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
 
     private lateinit var artistBiographyRepository: ArtistBiographyRepository
@@ -37,8 +36,8 @@ object MoreDetailsInjector {
 
     fun getMoreDetailsPresenter() = moreDetailsPresenter
 
-    fun init(moreDetailsView: MoreDetailsView){
-        initMoreDetailsView(moreDetailsView)
+    fun init(moreDetailsViewActivity: MoreDetailsViewActivity){
+        initMoreDetailsView(moreDetailsViewActivity)
 
         initArticleDatabase()
         initLastFMArticleAPI()
@@ -53,13 +52,13 @@ object MoreDetailsInjector {
         initMoreDetailsPresenter()
     }
 
-    private fun initMoreDetailsView(moreDetailsView: MoreDetailsView){
-        this.moreDetailsView = moreDetailsView
+    private fun initMoreDetailsView(moreDetailsViewActivity: MoreDetailsViewActivity){
+        this.moreDetailsViewActivity = moreDetailsViewActivity
     }
 
     private fun initArticleDatabase() {
         articleDatabase =
-            Room.databaseBuilder(moreDetailsView as Context, ArticleDatabase::class.java, ARTICLE_DATABASE_NAME).build()
+            Room.databaseBuilder(moreDetailsViewActivity, ArticleDatabase::class.java, ARTICLE_DATABASE_NAME).build()
     }
 
     private fun initLastFMArticleAPI() {

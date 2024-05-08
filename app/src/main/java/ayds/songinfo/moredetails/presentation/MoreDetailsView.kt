@@ -13,10 +13,7 @@ import ayds.songinfo.moredetails.domain.ArtistBiography
 import com.squareup.picasso.Picasso
 import java.util.Locale
 
-interface MoreDetailsView{
-}
-
-class MoreDetailsViewActivity : Activity(), MoreDetailsView {
+class MoreDetailsViewActivity : Activity() {
     private lateinit var articleTextView: TextView
     private lateinit var lastFMLogoImageView: ImageView
     private lateinit var openUrlButton: Button

@@ -1,4 +1,4 @@
-package ayds.songinfo.moredetails
+package ayds.songinfo.moredetails.injector
 
 import androidx.room.Room
 import ayds.songinfo.moredetails.data.ArtistBiographyRepositoryImpl
@@ -11,6 +11,8 @@ import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
 import ayds.songinfo.moredetails.data.local.lastFM.room.ArticleDatabase
 import ayds.songinfo.moredetails.data.local.lastFM.room.LastFMLocalStorageRoomImpl
 import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
+import ayds.songinfo.moredetails.presentation.ArtistBiographyDescriptionHelper
+import ayds.songinfo.moredetails.presentation.ArtistBiographyDescriptionHelperImpl
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenter
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenterImpl
 import ayds.songinfo.moredetails.presentation.MoreDetailsViewActivity
@@ -21,8 +23,8 @@ object MoreDetailsInjector {
     private const val ARTICLE_DATABASE_NAME = "database-name-thename"
     private const val LASTFM_BASE_URL = "https://ws.audioscrobbler.com/2.0/"
 
-    private lateinit var moreDetailsViewActivity: MoreDetailsViewActivity
-    private lateinit var moreDetailsPresenter: MoreDetailsPresenter
+    lateinit var moreDetailsPresenter: MoreDetailsPresenter
+    lateinit var artistBiographyDescriptionHelper: ArtistBiographyDescriptionHelper
 
     private lateinit var artistBiographyRepository: ArtistBiographyRepository
 
@@ -34,12 +36,8 @@ object MoreDetailsInjector {
     private lateinit var articleDatabase: ArticleDatabase
     private lateinit var lastFMArticleAPI: LastFMArticleAPI
 
-    fun getMoreDetailsPresenter() = moreDetailsPresenter
-
     fun init(moreDetailsViewActivity: MoreDetailsViewActivity){
-        initMoreDetailsView(moreDetailsViewActivity)
-
-        initArticleDatabase()
+        initArticleDatabase(moreDetailsViewActivity)
         initLastFMArticleAPI()
 
         initLastFMToArtistBiographyResolver()
@@ -50,13 +48,10 @@ object MoreDetailsInjector {
         initArtistBiographyRepository()
 
         initMoreDetailsPresenter()
+        initArtistBiographyDescriptionHelper()
     }
 
-    private fun initMoreDetailsView(moreDetailsViewActivity: MoreDetailsViewActivity){
-        this.moreDetailsViewActivity = moreDetailsViewActivity
-    }
-
-    private fun initArticleDatabase() {
+    private fun initArticleDatabase(moreDetailsViewActivity: MoreDetailsViewActivity) {
         articleDatabase =
             Room.databaseBuilder(moreDetailsViewActivity, ArticleDatabase::class.java, ARTICLE_DATABASE_NAME).build()
     }
@@ -87,5 +82,9 @@ object MoreDetailsInjector {
 
     private fun initMoreDetailsPresenter() {
         moreDetailsPresenter = MoreDetailsPresenterImpl(artistBiographyRepository)
+    }
+
+    private fun initArtistBiographyDescriptionHelper() {
+        artistBiographyDescriptionHelper = ArtistBiographyDescriptionHelperImpl()
     }
 }

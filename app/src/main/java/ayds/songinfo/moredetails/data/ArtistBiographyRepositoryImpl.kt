@@ -4,7 +4,6 @@ import ayds.songinfo.moredetails.data.external.lastFM.LastFMArticleService
 import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
 import ayds.songinfo.moredetails.domain.ArtistBiography
 import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
-import ayds.songinfo.moredetails.presentation.MoreDetailsViewActivity
 
 class ArtistBiographyRepositoryImpl(
     private val lastFMLocalStorage: LastFMLocalStorage,
@@ -14,20 +13,24 @@ class ArtistBiographyRepositoryImpl(
         var artistBiography = lastFMLocalStorage.getArtistBiographyByArtistName(artistName)
 
         if (artistBiography != null){
-            artistBiography =  artistBiography.markItAsLocal()
+            artistBiography.markItAsLocal()
         }
         else {
             artistBiography = lastFMArticleService.getArtistBiography(artistName)
             if (artistBiography != null){
-                lastFMLocalStorage.insertArtistBiography(artistBiography)
+                if (artistBiography.biography.isNotEmpty()) {
+                    lastFMLocalStorage.insertArtistBiography(artistBiography)
+                }
             }
             else {
-                artistBiography = ArtistBiography(artistName, MoreDetailsViewActivity.NO_RESULTS, "")
+                artistBiography = ArtistBiography(artistName, "", "")
             }
         }
 
         return artistBiography
     }
 
-    private fun ArtistBiography.markItAsLocal() = copy(biography = "[*]$biography")
+    private fun ArtistBiography.markItAsLocal() {
+        isLocallyStored = true
+    }
 }

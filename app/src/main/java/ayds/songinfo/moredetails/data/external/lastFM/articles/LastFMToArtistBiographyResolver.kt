@@ -1,7 +1,6 @@
 package ayds.songinfo.moredetails.data.external.lastFM.articles
 
 import ayds.songinfo.moredetails.domain.ArtistBiography
-import ayds.songinfo.moredetails.presentation.MoreDetailsViewActivity
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 
@@ -21,7 +20,7 @@ internal class JsonToArtistBiographyResolver : LastFMToArtistBiographyResolver {
             serviceData?.getArtist()?.let { artist ->
                 ArtistBiography(
                     artist.getName(),
-                    MoreDetailsViewActivity.textToHtml(artist.getBiography(), artist.getName()),
+                    artist.getBiography(),
                     artist.getArticleUrl()
                 )
             }
@@ -37,7 +36,7 @@ internal class JsonToArtistBiographyResolver : LastFMToArtistBiographyResolver {
     private fun JsonObject.getName() = this[NAME].asString
 
     private fun JsonObject.getBiography(): String {
-        return this[BIOGRAPHY].asJsonObject[CONTENT].asString.replace("\\n", "\n")
+        return this[BIOGRAPHY].asJsonObject[CONTENT].asString
     }
 
     private fun JsonObject.getArticleUrl() = this[URL].asString

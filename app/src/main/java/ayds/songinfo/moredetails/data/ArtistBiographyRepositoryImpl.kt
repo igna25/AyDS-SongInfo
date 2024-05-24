@@ -1,13 +1,12 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.external.lastFM.LastFMArticleService
 import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
-import ayds.songinfo.moredetails.domain.ArtistBiography
+import ayds.artist.external.lastfm.data.ArtistBiography
 import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
 
 class ArtistBiographyRepositoryImpl(
     private val lastFMLocalStorage: LastFMLocalStorage,
-    private val lastFMArticleService: LastFMArticleService
+    private val lastFMArticleService: ayds.artist.external.lastfm.data.LastFMArticleService
 ): ArtistBiographyRepository {
     override fun getAristBiographyByArtistName(artistName: String): ArtistBiography {
         var artistBiography = lastFMLocalStorage.getArtistBiographyByArtistName(artistName)

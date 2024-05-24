@@ -9,7 +9,6 @@ import android.widget.TextView
 import androidx.core.text.HtmlCompat
 import ayds.songinfo.R
 import ayds.songinfo.moredetails.injector.MoreDetailsInjector
-import ayds.songinfo.moredetails.domain.ArtistBiography
 import ayds.songinfo.utils.UtilsInjector
 import ayds.songinfo.utils.navigation.NavigationUtils
 import ayds.songinfo.utils.view.ImageLoader
@@ -23,7 +22,6 @@ class MoreDetailsViewActivity : Activity() {
     private val navigationUtils: NavigationUtils = UtilsInjector.navigationUtils
 
     private lateinit var moreDetailsPresenter: MoreDetailsPresenter
-    private lateinit var artistBiographyDescriptionHelper: ArtistBiographyDescriptionHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +37,6 @@ class MoreDetailsViewActivity : Activity() {
     private fun initModule(){
         MoreDetailsInjector.init(this)
         moreDetailsPresenter = MoreDetailsInjector.moreDetailsPresenter
-        artistBiographyDescriptionHelper = MoreDetailsInjector.artistBiographyDescriptionHelper
     }
 
     private fun initViewProperties() {
@@ -50,21 +47,19 @@ class MoreDetailsViewActivity : Activity() {
 
     private fun initObservers() {
         moreDetailsPresenter.artistBiographyObservable
-            .subscribe{ value -> updateViewAsync(adaptArticle(value))}
+            .subscribe{ value -> updateViewAsync(value)}
     }
 
-    private fun adaptArticle(article: ArtistBiography) = article.copy(biography = artistBiographyDescriptionHelper.getDescription(article))
-
-    private fun updateViewAsync(article: ArtistBiography) {
+    private fun updateViewAsync(article: ArtistBiographyUiState) {
         runOnUiThread {
             updateView(article)
         }
     }
 
-    private fun updateView(article: ArtistBiography) {
+    private fun updateView(article: ArtistBiographyUiState) {
         updateOpenUrlButton(article.articleUrl)
-        updateLastFMLogoImageView()
-        updateArticleTextView(article.biography)
+        updateLastFMLogoImageView(article.imageUrl)
+        updateArticleTextView(article.infoHtml)
     }
 
     private fun updateOpenUrlButton(articleUrl: String) {
@@ -77,8 +72,8 @@ class MoreDetailsViewActivity : Activity() {
         navigationUtils.openExternalUrl(this, articleUrl)
     }
 
-    private fun updateLastFMLogoImageView() {
-        imageLoader.loadImageIntoView(IMAGE_URL, lastFMLogoImageView)
+    private fun updateLastFMLogoImageView(imageUrl: String) {
+        imageLoader.loadImageIntoView(imageUrl, lastFMLogoImageView)
     }
 
     private fun updateArticleTextView(biography: String) {
@@ -99,6 +94,5 @@ class MoreDetailsViewActivity : Activity() {
 
     companion object {
         const val ARTIST_NAME_EXTRA = "artistName"
-        const val IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
     }
 }

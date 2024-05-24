@@ -1,7 +1,7 @@
 package ayds.songinfo.moredetails.data.local.lastFM.room
 
 import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
-import ayds.songinfo.moredetails.domain.ArtistBiography
+import ayds.artist.external.lastfm.data.ArtistBiography
 
 internal class LastFMLocalStorageRoomImpl(
     database: ArticleDatabase

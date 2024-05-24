@@ -1,7 +1,5 @@
-package ayds.songinfo.moredetails.data.external.lastFM.articles
+package ayds.artist.external.lastfm.data
 
-import ayds.songinfo.moredetails.data.external.lastFM.LastFMArticleService
-import ayds.songinfo.moredetails.domain.ArtistBiography
 import retrofit2.Response
 
 internal class LastFMArticleServiceImpl(

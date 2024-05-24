@@ -1,8 +1,7 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.external.lastFM.LastFMArticleService
 import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
-import ayds.songinfo.moredetails.domain.ArtistBiography
+import ayds.artist.external.lastfm.data.ArtistBiography
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -13,7 +12,7 @@ import org.junit.Test
 
 class ArtistBiographyRepositoryTest {
     private val lastFMLocalStorage: LastFMLocalStorage = mockk(relaxUnitFun = true)
-    private val lastFMArticleService: LastFMArticleService = mockk(relaxUnitFun = true)
+    private val lastFMArticleService: ayds.artist.external.lastfm.data.LastFMArticleService = mockk(relaxUnitFun = true)
 
     private val repository = ArtistBiographyRepositoryImpl(lastFMLocalStorage, lastFMArticleService)
 

@@ -1,10 +1,10 @@
 package ayds.artist.external.newyorktimes.injector
 
-import ayds.artist.external.newyorktimes.data.NYTimesAPI
-import ayds.artist.external.newyorktimes.data.NYTimesService
-import ayds.artist.external.newyorktimes.data.NYTimesServiceImpl
 import ayds.artist.external.newyorktimes.data.NYTimesToArtistResolver
 import ayds.artist.external.newyorktimes.data.NYTimesToArtistResolverImpl
+import ayds.artist.external.newyorktimes.data.NYTimesService
+import ayds.artist.external.newyorktimes.data.NYTimesServiceImpl
+import ayds.artist.external.newyorktimes.data.NYTimesAPI
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 

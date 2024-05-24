@@ -19,15 +19,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/source1TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10px"
+                android:textAlignment="center"
+                android:textSize="28sp" />
+
             <ImageView
-                android:id="@+id/imageView1"
+                android:id="@+id/logo1ImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:paddingTop="24dp"/>
 
             <TextView
-                android:id="@+id/textPane1"
+                android:id="@+id/description1TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
@@ -35,21 +43,29 @@
                 android:padding="16dp" />
 
             <Button
-                android:id="@+id/openUrlButton1"
+                android:id="@+id/openUrl1Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="View Full Article" />
 
+            <TextView
+                android:id="@+id/source2TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10px"
+                android:textAlignment="center"
+                android:textSize="28sp" />
+
             <ImageView
-                android:id="@+id/imageView2"
+                android:id="@+id/logo2ImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:paddingTop="24dp"/>
 
             <TextView
-                android:id="@+id/textPane2"
+                android:id="@+id/description2TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
@@ -57,22 +73,29 @@
                 android:padding="16dp" />
 
             <Button
-                android:id="@+id/openUrlButton2"
+                android:id="@+id/openUrl2Button"
                 android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:text="View Full Article" />
 
+            <TextView
+                android:id="@+id/source3TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="28sp" />
+
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/logo3ImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:paddingTop="24dp"/>
 
             <TextView
-                android:id="@+id/textPane3"
+                android:id="@+id/description3TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:autoLink="web"
@@ -80,12 +103,12 @@
                 android:padding="16dp" />
 
             <Button
-                android:id="@+id/openUrlButton3"
-                android:visibility="gone"
+                android:id="@+id/openUr3lButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:text="View Full Article" />
+                android:text="View Full Article"
+                android:visibility="gone" />
 
         </LinearLayout>
 

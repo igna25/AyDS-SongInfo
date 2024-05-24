@@ -1,9 +1,9 @@
 package ayds.songinfo.moredetails.data.local.lastFM
 
-import ayds.artist.external.lastfm.data.ArtistBiography
+import ayds.songinfo.moredetails.domain.Card
 
 interface LastFMLocalStorage {
-    fun getArtistBiographyByArtistName(artistName: String): ArtistBiography?
+    fun getArtistBiographyByArtistName(artistName: String): Card?
 
-    fun insertArtistBiography(artistBiography: ArtistBiography)
+    fun insertArtistBiography(lastFMCard: Card)
 }

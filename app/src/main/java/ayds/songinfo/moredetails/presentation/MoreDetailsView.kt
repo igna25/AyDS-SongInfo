@@ -14,9 +14,10 @@ import ayds.songinfo.utils.navigation.NavigationUtils
 import ayds.songinfo.utils.view.ImageLoader
 
 class MoreDetailsViewActivity : Activity() {
-    private lateinit var articleTextView: TextView
+    private lateinit var descriptionTextView: TextView
     private lateinit var lastFMLogoImageView: ImageView
     private lateinit var openUrlButton: Button
+    private lateinit var sourceTextView: TextView
 
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private val navigationUtils: NavigationUtils = UtilsInjector.navigationUtils
@@ -40,9 +41,10 @@ class MoreDetailsViewActivity : Activity() {
     }
 
     private fun initViewProperties() {
-        articleTextView = findViewById(R.id.textPane1)
-        lastFMLogoImageView = findViewById(R.id.imageView1)
-        openUrlButton = findViewById(R.id.openUrlButton1)
+        descriptionTextView = findViewById(R.id.description1TextView)
+        lastFMLogoImageView = findViewById(R.id.logo1ImageView)
+        openUrlButton = findViewById(R.id.openUrl1Button)
+        sourceTextView = findViewById(R.id.source1TextView)
     }
 
     private fun initObservers() {
@@ -50,34 +52,39 @@ class MoreDetailsViewActivity : Activity() {
             .subscribe{ value -> updateViewAsync(value)}
     }
 
-    private fun updateViewAsync(article: ArtistBiographyUiState) {
+    private fun updateViewAsync(article: CardUiState) {
         runOnUiThread {
             updateView(article)
         }
     }
 
-    private fun updateView(article: ArtistBiographyUiState) {
-        updateOpenUrlButton(article.articleUrl)
-        updateLastFMLogoImageView(article.imageUrl)
-        updateArticleTextView(article.infoHtml)
+    private fun updateView(article: CardUiState) {
+        updateOpenUrlButton(article.infoUrl)
+        updateLastFMLogoImageView(article.sourceLogoUrl)
+        updateDescriptionTextView(article.infoHtml)
+        updateSourceTextView(article.source)
     }
 
-    private fun updateOpenUrlButton(articleUrl: String) {
+    private fun updateOpenUrlButton(infoUrl: String) {
         openUrlButton.setOnClickListener {
-            onOpenUrlButtonClick(articleUrl)
+            onOpenUrlButtonClick(infoUrl)
         }
     }
 
-    private fun onOpenUrlButtonClick(articleUrl: String) {
-        navigationUtils.openExternalUrl(this, articleUrl)
+    private fun onOpenUrlButtonClick(infoUrl: String) {
+        navigationUtils.openExternalUrl(this, infoUrl)
     }
 
-    private fun updateLastFMLogoImageView(imageUrl: String) {
-        imageLoader.loadImageIntoView(imageUrl, lastFMLogoImageView)
+    private fun updateLastFMLogoImageView(sourceLogoUrl: String) {
+        imageLoader.loadImageIntoView(sourceLogoUrl, lastFMLogoImageView)
     }
 
-    private fun updateArticleTextView(biography: String) {
-        articleTextView.text = Html.fromHtml(biography, HtmlCompat.FROM_HTML_MODE_LEGACY)
+    private fun updateDescriptionTextView(infoHtml: String) {
+        descriptionTextView.text = Html.fromHtml(infoHtml, HtmlCompat.FROM_HTML_MODE_LEGACY)
+    }
+
+    private fun updateSourceTextView(source: String) {
+        sourceTextView.text = source
     }
 
     private fun getArtistInfoAsync() {

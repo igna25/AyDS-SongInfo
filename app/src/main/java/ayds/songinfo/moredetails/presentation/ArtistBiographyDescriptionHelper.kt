@@ -1,27 +1,29 @@
 package ayds.songinfo.moredetails.presentation
 
-import ayds.artist.external.lastfm.data.ArtistBiography
+import ayds.songinfo.moredetails.domain.Card
 import java.util.Locale
 
+
 interface ArtistBiographyDescriptionHelper {
-    fun getDescription(artistBiography: ArtistBiography): String
+    fun getDescription(card: Card): String
 }
 
 internal class ArtistBiographyDescriptionHelperImpl : ArtistBiographyDescriptionHelper {
-    override fun getDescription(artistBiography: ArtistBiography): String {
-        return textToHtml(getTextBiography(artistBiography), artistBiography.artistName)
+    override fun getDescription(card: Card): String {
+        return textToHtml(getTextBiography(card), card.artistName)
     }
 
-    private fun getTextBiography(artistBiography: ArtistBiography): String {
-        val prefix = if (artistBiography.isLocallyStored) "[*]" else ""
-        val text = if (artistBiography.biography.isEmpty()) NO_RESULTS else artistBiography.biography.replace("\\n", "\n")
+    private fun getTextBiography(card: Card): String {
+        val prefix = if (card.isLocallyStored) LOCAL_MARKER else ""
+        val text = if (card.description.isEmpty()) NO_RESULTS else card.description.replace("\\n", "\n")
         return prefix + text
     }
 
     companion object {
+        private const val LOCAL_MARKER = "[*]"
         private const val HEADER = "<html><div width=400><font face=\"arial\">"
         private const val FOOTER = "</font></div></html>"
-        const val NO_RESULTS = "No Results"
+        private const val NO_RESULTS = "No Results"
 
         private fun textToHtml(text: String, term: String): String {
             val stringBuilder = StringBuilder()

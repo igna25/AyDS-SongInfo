@@ -12,6 +12,7 @@ private const val NAME = "name"
 private const val BIOGRAPHY = "bio"
 private const val CONTENT = "content"
 private const val URL = "url"
+private const val LASTFM_LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Lastfm_logo.svg/320px-Lastfm_logo.svg.png"
 
 internal class JsonToArtistBiographyResolver : LastFMToArtistBiographyResolver {
     override fun getArtistBiographyFromExternalData(serviceData: String?): ArtistBiography? =
@@ -20,7 +21,8 @@ internal class JsonToArtistBiographyResolver : LastFMToArtistBiographyResolver {
                 ArtistBiography(
                     artist.getName(),
                     artist.getBiography(),
-                    artist.getArticleUrl()
+                    artist.getArticleUrl(),
+                    LASTFM_LOGO_URL
                 )
             }
         } catch (exception: Exception) {

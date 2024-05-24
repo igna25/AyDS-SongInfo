@@ -1,35 +1,36 @@
 package ayds.songinfo.moredetails.data
 
 import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
-import ayds.artist.external.lastfm.data.ArtistBiography
+import ayds.songinfo.moredetails.data.proxy.LastFMProxy
 import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
+import ayds.songinfo.moredetails.domain.Card
 
 class ArtistBiographyRepositoryImpl(
     private val lastFMLocalStorage: LastFMLocalStorage,
-    private val lastFMArticleService: ayds.artist.external.lastfm.data.LastFMArticleService
+    private val proxyLastFm: LastFMProxy,
 ): ArtistBiographyRepository {
-    override fun getAristBiographyByArtistName(artistName: String): ArtistBiography {
-        var artistBiography = lastFMLocalStorage.getArtistBiographyByArtistName(artistName)
+    override fun getAristBiographyByArtistName(artistName: String): Card {
+        var card = lastFMLocalStorage.getArtistBiographyByArtistName(artistName)
 
-        if (artistBiography != null){
-            artistBiography.markItAsLocal()
+        if (card != null){
+            card.markItAsLocal()
         }
         else {
-            artistBiography = lastFMArticleService.getArtistBiography(artistName)
-            if (artistBiography != null){
-                if (artistBiography.biography.isNotEmpty()) {
-                    lastFMLocalStorage.insertArtistBiography(artistBiography)
+            card = proxyLastFm.getCard(artistName)
+            if (card != null){
+                if (card.description.isNotEmpty()) {
+                    lastFMLocalStorage.insertArtistBiography(card)
                 }
             }
             else {
-                artistBiography = ArtistBiography(artistName, "", "")
+                card = Card(artistName, "", "", "", "")
             }
         }
 
-        return artistBiography
+        return card
     }
 
-    private fun ArtistBiography.markItAsLocal() {
+    private fun Card.markItAsLocal() {
         isLocallyStored = true
     }
 }

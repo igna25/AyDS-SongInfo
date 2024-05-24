@@ -6,6 +6,8 @@ import ayds.songinfo.moredetails.data.ArtistBiographyRepositoryImpl
 import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
 import ayds.songinfo.moredetails.data.local.lastFM.room.ArticleDatabase
 import ayds.songinfo.moredetails.data.local.lastFM.room.LastFMLocalStorageRoomImpl
+import ayds.songinfo.moredetails.data.proxy.LastFMProxy
+import ayds.songinfo.moredetails.data.proxy.LastFMProxyImpl
 import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
 import ayds.songinfo.moredetails.presentation.ArtistBiographyDescriptionHelper
 import ayds.songinfo.moredetails.presentation.ArtistBiographyDescriptionHelperImpl
@@ -22,6 +24,8 @@ object MoreDetailsInjector {
 
     private lateinit var artistBiographyRepository: ArtistBiographyRepository
 
+    private lateinit var lastFMProxy: LastFMProxy
+
     private lateinit var lastFMLocalStorage: LastFMLocalStorage
 
     private lateinit var articleDatabase: ArticleDatabase
@@ -30,6 +34,8 @@ object MoreDetailsInjector {
         initArticleDatabase(moreDetailsViewActivity)
 
         initLastFMLocalStorage()
+
+        initLastFMProxy()
 
         initArtistBiographyRepository()
 
@@ -46,8 +52,12 @@ object MoreDetailsInjector {
         lastFMLocalStorage = LastFMLocalStorageRoomImpl(articleDatabase)
     }
 
+    private fun initLastFMProxy() {
+        lastFMProxy = LastFMProxyImpl(LastFMInjector.lastFMArticleService)
+    }
+
     private fun initArtistBiographyRepository() {
-        artistBiographyRepository = ArtistBiographyRepositoryImpl(lastFMLocalStorage, LastFMInjector.lastFMArticleService)
+        artistBiographyRepository = ArtistBiographyRepositoryImpl(lastFMLocalStorage, lastFMProxy)
     }
 
     private fun initMoreDetailsPresenter() {

@@ -9,6 +9,7 @@ private const val PROP_RESPONSE = "response"
 private const val WEB_URL = "web_url"
 private const val DOCS = "docs"
 
+
 interface NYTimesToArtistResolver {
     fun getURL(response: Response<String>): String
     fun generateFormattedResponse(response: Response<String>, nameArtist: String?): String?

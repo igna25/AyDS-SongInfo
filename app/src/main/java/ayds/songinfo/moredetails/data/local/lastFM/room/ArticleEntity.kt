@@ -1,12 +1,12 @@
 package ayds.songinfo.moredetails.data.local.lastFM.room
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity
+@Entity(primaryKeys = ["artistName", "source"])
 data class ArticleEntity(
-    @PrimaryKey
     val artistName: String,
-    val biography: String,
+    val source: String,
+    val description: String,
     val articleUrl: String,
+    val sourceLogoUrl: String,
 )

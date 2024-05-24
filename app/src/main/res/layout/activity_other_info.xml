@@ -74,11 +74,11 @@
 
             <Button
                 android:id="@+id/openUrl2Button"
-                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:text="View Full Article" />
+                android:text="View Full Article"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/source3TextView"
@@ -103,7 +103,7 @@
                 android:padding="16dp" />
 
             <Button
-                android:id="@+id/openUr3lButton"
+                android:id="@+id/openUrl3Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"

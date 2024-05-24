@@ -4,11 +4,11 @@ import ayds.songinfo.moredetails.domain.Card
 import java.util.Locale
 
 
-interface ArtistBiographyDescriptionHelper {
+interface DescriptionHelper {
     fun getDescription(card: Card): String
 }
 
-internal class ArtistBiographyDescriptionHelperImpl : ArtistBiographyDescriptionHelper {
+internal class DescriptionHelperImpl : DescriptionHelper {
     override fun getDescription(card: Card): String {
         return textToHtml(getTextBiography(card), card.artistName)
     }

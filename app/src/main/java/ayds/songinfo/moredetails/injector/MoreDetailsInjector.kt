@@ -2,40 +2,53 @@ package ayds.songinfo.moredetails.injector
 
 import androidx.room.Room
 import ayds.artist.external.lastfm.injector.LastFMInjector
-import ayds.songinfo.moredetails.data.ArtistBiographyRepositoryImpl
-import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
-import ayds.songinfo.moredetails.data.local.lastFM.room.ArticleDatabase
-import ayds.songinfo.moredetails.data.local.lastFM.room.LastFMLocalStorageRoomImpl
+import ayds.artist.external.newyorktimes.injector.NYTimesInjector
+import ayds.artist.external.wikipedia.injector.WikipediaInjector
+import ayds.songinfo.moredetails.data.Broker
+import ayds.songinfo.moredetails.data.BrokerImpl
+import ayds.songinfo.moredetails.data.MoreDetailsRepositoryImpl
+import ayds.songinfo.moredetails.data.local.lastFM.MoreDetailsLocalStorage
+import ayds.songinfo.moredetails.data.local.lastFM.room.MoreDetailsDatabase
+import ayds.songinfo.moredetails.data.local.lastFM.room.MoreDetailsLocalStorageRoomImpl
 import ayds.songinfo.moredetails.data.proxy.LastFMProxy
-import ayds.songinfo.moredetails.data.proxy.LastFMProxyImpl
-import ayds.songinfo.moredetails.domain.ArtistBiographyRepository
-import ayds.songinfo.moredetails.presentation.ArtistBiographyDescriptionHelper
-import ayds.songinfo.moredetails.presentation.ArtistBiographyDescriptionHelperImpl
+import ayds.songinfo.moredetails.data.proxy.NewYorkTimesProxy
+import ayds.songinfo.moredetails.data.proxy.WikipediaProxy
+import ayds.songinfo.moredetails.domain.MoreDetailsRepository
+import ayds.songinfo.moredetails.presentation.DescriptionHelper
+import ayds.songinfo.moredetails.presentation.DescriptionHelperImpl
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenter
 import ayds.songinfo.moredetails.presentation.MoreDetailsPresenterImpl
 import ayds.songinfo.moredetails.presentation.MoreDetailsViewActivity
 
 object MoreDetailsInjector {
-    private const val ARTICLE_DATABASE_NAME = "database-name-thename"
+    private const val MORE_DETAILS_DATABASE_NAME = "more-details-database"
 
 
     lateinit var moreDetailsPresenter: MoreDetailsPresenter
-    private lateinit var artistBiographyDescriptionHelper: ArtistBiographyDescriptionHelper
+    private lateinit var descriptionHelper: DescriptionHelper
 
-    private lateinit var artistBiographyRepository: ArtistBiographyRepository
+    private lateinit var moreDetailsRepository: MoreDetailsRepository
+
+    private lateinit var broker: Broker
 
     private lateinit var lastFMProxy: LastFMProxy
+    private lateinit var wikipediaProxy: WikipediaProxy
+    private lateinit var newYorkTimesProxy: NewYorkTimesProxy
 
-    private lateinit var lastFMLocalStorage: LastFMLocalStorage
+    private lateinit var moreDetailsLocalStorage: MoreDetailsLocalStorage
 
-    private lateinit var articleDatabase: ArticleDatabase
+    private lateinit var moreDetailsDatabase: MoreDetailsDatabase
 
     fun init(moreDetailsViewActivity: MoreDetailsViewActivity){
-        initArticleDatabase(moreDetailsViewActivity)
+        initMoreDetailsDatabase(moreDetailsViewActivity)
 
         initLastFMLocalStorage()
 
         initLastFMProxy()
+        initWikipediaProxy()
+        initNewYorkTimesProxy()
+
+        initBroker()
 
         initArtistBiographyRepository()
 
@@ -43,28 +56,40 @@ object MoreDetailsInjector {
         initMoreDetailsPresenter()
     }
 
-    private fun initArticleDatabase(moreDetailsViewActivity: MoreDetailsViewActivity) {
-        articleDatabase =
-            Room.databaseBuilder(moreDetailsViewActivity, ArticleDatabase::class.java, ARTICLE_DATABASE_NAME).build()
+    private fun initMoreDetailsDatabase(moreDetailsViewActivity: MoreDetailsViewActivity) {
+        moreDetailsDatabase =
+            Room.databaseBuilder(moreDetailsViewActivity, MoreDetailsDatabase::class.java, MORE_DETAILS_DATABASE_NAME).build()
     }
 
     private fun initLastFMLocalStorage() {
-        lastFMLocalStorage = LastFMLocalStorageRoomImpl(articleDatabase)
+        moreDetailsLocalStorage = MoreDetailsLocalStorageRoomImpl(moreDetailsDatabase)
     }
 
     private fun initLastFMProxy() {
-        lastFMProxy = LastFMProxyImpl(LastFMInjector.lastFMArticleService)
+        lastFMProxy = LastFMProxy(LastFMInjector.lastFMArticleService)
+    }
+
+    private fun initWikipediaProxy() {
+        wikipediaProxy = WikipediaProxy(WikipediaInjector.wikipediaTrackService)
+    }
+
+    private fun initNewYorkTimesProxy() {
+        newYorkTimesProxy = NewYorkTimesProxy(NYTimesInjector.nyTimesService)
+    }
+
+    private fun initBroker() {
+        broker = BrokerImpl(listOf(lastFMProxy, wikipediaProxy, newYorkTimesProxy))
     }
 
     private fun initArtistBiographyRepository() {
-        artistBiographyRepository = ArtistBiographyRepositoryImpl(lastFMLocalStorage, lastFMProxy)
+        moreDetailsRepository = MoreDetailsRepositoryImpl(moreDetailsLocalStorage, broker)
     }
 
     private fun initMoreDetailsPresenter() {
-        moreDetailsPresenter = MoreDetailsPresenterImpl(artistBiographyRepository, artistBiographyDescriptionHelper)
+        moreDetailsPresenter = MoreDetailsPresenterImpl(moreDetailsRepository, descriptionHelper)
     }
 
     private fun initArtistBiographyDescriptionHelper() {
-        artistBiographyDescriptionHelper = ArtistBiographyDescriptionHelperImpl()
+        descriptionHelper = DescriptionHelperImpl()
     }
 }

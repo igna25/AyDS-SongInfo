@@ -1,14 +1,12 @@
 package ayds.songinfo.moredetails.data.proxy
 
 import ayds.artist.external.lastfm.data.ArtistBiography
+import ayds.artist.external.lastfm.data.LastFMArticleService
 import ayds.songinfo.moredetails.domain.Card
 
-const val SOURCE = "LastFM"
-interface LastFMProxy {
-    fun getCard(artistName: String) : Card?
-}
+private const val SOURCE = "LastFM"
 
-internal class LastFMProxyImpl(private val lastFMArticleService: ayds.artist.external.lastfm.data.LastFMArticleService): LastFMProxy{
+internal class LastFMProxy(private val lastFMArticleService: LastFMArticleService): Proxy{
 
     override fun getCard(artistName: String) : Card? {
         val artistBiography = lastFMArticleService.getArtistBiography(artistName)

@@ -4,8 +4,8 @@ import ayds.artist.external.lastfm.data.ArtistBiography
 import org.junit.Test
 import org.junit.Assert.assertEquals
 
-class ArtistBiographyDescriptionHelperTest {
-    private val artistBiographyDescriptionHelper = ArtistBiographyDescriptionHelperImpl()
+class DescriptionHelperTest {
+    private val artistBiographyDescriptionHelper = DescriptionHelperImpl()
 
     @Test
     fun `given a local non empty biography should return the article`() {

@@ -1,6 +1,6 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.local.lastFM.LastFMLocalStorage
+import ayds.songinfo.moredetails.data.local.lastFM.DoreDetailsLocalStorage
 import ayds.artist.external.lastfm.data.ArtistBiography
 import io.mockk.every
 import io.mockk.mockk
@@ -10,11 +10,11 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class ArtistBiographyRepositoryTest {
-    private val lastFMLocalStorage: LastFMLocalStorage = mockk(relaxUnitFun = true)
+class MoreDetailsRepositoryTest {
+    private val lastFMLocalStorage: DoreDetailsLocalStorage = mockk(relaxUnitFun = true)
     private val lastFMArticleService: ayds.artist.external.lastfm.data.LastFMArticleService = mockk(relaxUnitFun = true)
 
-    private val repository = ArtistBiographyRepositoryImpl(lastFMLocalStorage, lastFMArticleService)
+    private val repository = MoreDetailsRepositoryImpl(lastFMLocalStorage, lastFMArticleService)
 
     @Test
     fun `given local artist biography should return the artist biography and mark it as local`() {
@@ -26,7 +26,7 @@ class ArtistBiographyRepositoryTest {
         )
         every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns artistBiography
 
-        val result = repository.getAristBiographyByArtistName("name")
+        val result = repository.getDetailsByArtistName("name")
 
         assertEquals(artistBiography, result)
         assertTrue(result.isLocallyStored)
@@ -37,7 +37,7 @@ class ArtistBiographyRepositoryTest {
         every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns null
         every { lastFMArticleService.getArtistBiography("name") } returns null
 
-        val result = repository.getAristBiographyByArtistName("name")
+        val result = repository.getDetailsByArtistName("name")
 
         val expected = ArtistBiography("name", "", "")
 
@@ -56,7 +56,7 @@ class ArtistBiographyRepositoryTest {
         every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns null
         every { lastFMArticleService.getArtistBiography("name") } returns artistBiography
 
-        val result = repository.getAristBiographyByArtistName("name")
+        val result = repository.getDetailsByArtistName("name")
 
         assertEquals(artistBiography, result)
         assertFalse(result.isLocallyStored)
@@ -74,7 +74,7 @@ class ArtistBiographyRepositoryTest {
         every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns null
         every { lastFMArticleService.getArtistBiography("name") } returns artistBiography
 
-        val result = repository.getAristBiographyByArtistName("name")
+        val result = repository.getDetailsByArtistName("name")
 
         assertEquals(artistBiography, result)
         assertFalse(result.isLocallyStored)

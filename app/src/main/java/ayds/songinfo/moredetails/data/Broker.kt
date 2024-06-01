@@ -1,6 +1,5 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.proxy.LastFMProxy
 import ayds.songinfo.moredetails.data.proxy.Proxy
 import ayds.songinfo.moredetails.domain.Card
 

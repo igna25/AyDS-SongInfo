@@ -68,7 +68,7 @@ class MoreDetailsViewActivity : Activity() {
     }
 
     private fun initObservers() {
-        moreDetailsPresenter.artistBiographyObservable
+        moreDetailsPresenter.cardsObservable
             .subscribe{ value -> updateViewAsync(value)}
     }
 

@@ -1,7 +1,7 @@
 package ayds.songinfo.moredetails.data
 
-import ayds.songinfo.moredetails.data.local.lastFM.DoreDetailsLocalStorage
-import ayds.artist.external.lastfm.data.ArtistBiography
+import ayds.songinfo.moredetails.data.local.lastFM.MoreDetailsLocalStorage
+import ayds.songinfo.moredetails.domain.Card
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -11,72 +11,82 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MoreDetailsRepositoryTest {
-    private val lastFMLocalStorage: DoreDetailsLocalStorage = mockk(relaxUnitFun = true)
-    private val lastFMArticleService: ayds.artist.external.lastfm.data.LastFMArticleService = mockk(relaxUnitFun = true)
+    private val lastFMLocalStorage: MoreDetailsLocalStorage = mockk(relaxUnitFun = true)
+    private val broker: Broker = mockk(relaxUnitFun = true)
 
-    private val repository = MoreDetailsRepositoryImpl(lastFMLocalStorage, lastFMArticleService)
+    private val repository = MoreDetailsRepositoryImpl(lastFMLocalStorage, broker)
 
     @Test
-    fun `given local artist biography should return the artist biography and mark it as local`() {
-        val artistBiography = ArtistBiography(
+    fun `given local cards should return the cards and mark them as local`() {
+        val card = Card(
             "name",
             "bio",
             "url",
-            false
+            "source",
+            "sourceUrl",
+            false,
         )
-        every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns artistBiography
+        val cards = listOf(card)
+        every { lastFMLocalStorage.getDetailsByArtistName("name") } returns cards
 
         val result = repository.getDetailsByArtistName("name")
 
-        assertEquals(artistBiography, result)
-        assertTrue(result.isLocallyStored)
+        assertEquals(cards, result)
+        assertTrue(result.all { it.isLocallyStored })
     }
 
     @Test
-    fun `given null artist biography should return empty artist biography`() {
-        every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns null
-        every { lastFMArticleService.getArtistBiography("name") } returns null
+    fun `given empty card list should return no results card`() {
+        every { lastFMLocalStorage.getDetailsByArtistName("name") } returns emptyList()
+        every { broker.getCards("name") } returns emptyList()
 
         val result = repository.getDetailsByArtistName("name")
 
-        val expected = ArtistBiography("name", "", "")
+        val expected = listOf(Card("name", "", "", "", ""))
 
         assertEquals(expected, result)
-        assertFalse(result.isLocallyStored)
+        assertFalse(result.all { it.isLocallyStored })
     }
 
     @Test
-    fun `given non local non empty artist biography should return the artist biography and store it`() {
-        val artistBiography = ArtistBiography(
+    fun `given non local non empty card list should return the card list and store it`() {
+        val card = Card(
             "name",
             "bio",
             "url",
-            false
+            "source",
+            "sourceUrl",
+            false,
         )
-        every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns null
-        every { lastFMArticleService.getArtistBiography("name") } returns artistBiography
+        val cards = listOf(card)
+        every { lastFMLocalStorage.getDetailsByArtistName("name") } returns emptyList()
+        every { broker.getCards("name") } returns cards
 
         val result = repository.getDetailsByArtistName("name")
 
-        assertEquals(artistBiography, result)
-        assertFalse(result.isLocallyStored)
-        verify { lastFMLocalStorage.insertArtistBiography(artistBiography) }
+        assertEquals(cards, result)
+        assertFalse(result.all { it.isLocallyStored })
+        cards.forEach { verify { lastFMLocalStorage.insertArtistDetails(it) } }
     }
 
     @Test
-    fun `given non local empty artist biography should return the artist biography`() {
-        val artistBiography = ArtistBiography(
+    fun `given non local empty card list should return the card list and not store it`() {
+        val card = Card(
             "name",
             "",
             "url",
-            false
+            "source",
+            "sourceUrl",
+            false,
         )
-        every { lastFMLocalStorage.getArtistBiographyByArtistName("name") } returns null
-        every { lastFMArticleService.getArtistBiography("name") } returns artistBiography
+        val cards = listOf(card)
+        every { lastFMLocalStorage.getDetailsByArtistName("name") } returns emptyList()
+        every { broker.getCards("name") } returns cards
 
         val result = repository.getDetailsByArtistName("name")
 
-        assertEquals(artistBiography, result)
-        assertFalse(result.isLocallyStored)
+        assertEquals(cards, result)
+        assertFalse(result.all { it.isLocallyStored })
+        cards.forEach { verify (inverse = true) { lastFMLocalStorage.insertArtistDetails(it) } }
     }
 }

@@ -9,7 +9,6 @@ sealed class NYTimesArticle {
         val name: String?,
         val info: String?,
         val url: String,
-        val logoUrl: String = NYT_LOGO_URL,
     ): NYTimesArticle()
 
     object EmptyArtistDataExternal : NYTimesArticle()

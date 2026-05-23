@@ -7,6 +7,8 @@ data class HomeUiState(
     val songImageUrl: String = DEFAULT_IMAGE,
     val songUrl: String = "",
     val actionsEnabled: Boolean = false,
+    val isLocallyStored: Boolean = false,
+    val songPreviewUrl: String = "",
 ) {
 
     companion object {

@@ -10,6 +10,7 @@ sealed class Song {
         val spotifyUrl: String,
         val imageUrl: String,
         val releaseDatePrecision: String,
+        val previewUrl: String,
         var isLocallyStored: Boolean = false
     ) : Song()
 

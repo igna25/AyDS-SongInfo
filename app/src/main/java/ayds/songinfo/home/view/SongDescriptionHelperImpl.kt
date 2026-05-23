@@ -12,10 +12,7 @@ internal class SongDescriptionHelperImpl(private val releaseDateResolverFactory:
     override fun getSongDescriptionText(song: Song): String {
         return when (song) {
             is SpotifySong ->
-                "${
-                    "Song: ${song.songName} " +
-                            if (song.isLocallyStored) "[*]" else ""
-                }\n" +
+                "Song: ${song.songName}\n" +
                         "Artist: ${song.artistName}\n" +
                         "Album: ${song.albumName}\n" +
                         "Release date: ${releaseDateResolverFactory.get(song).getReleaseDateString()}"

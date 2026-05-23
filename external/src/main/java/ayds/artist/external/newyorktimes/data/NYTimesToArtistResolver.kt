@@ -15,36 +15,42 @@ interface NYTimesToArtistResolver {
 }
 
 class NYTimesToArtistResolverImpl : NYTimesToArtistResolver {
-    private fun getJson(callResponse: Response<String>): JsonObject {
+
+    override fun getURL(response: Response<String>): String {
+        return try {
+            val jsonResponse = generateResponse(response)
+            jsonResponse?.get(DOCS)?.asJsonArray?.get(0)?.asJsonObject?.get(WEB_URL)?.asString ?: ""
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
+    override fun generateFormattedResponse(response: Response<String>, nameArtist: String?): String? {
+        return try {
+            val jsonResponse = generateResponse(response)
+            val abstract = jsonResponse?.let { getAsJsonObject(it) }
+            abstract?.let { artistInfoAbstractToString(it) }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun getJson(callResponse: Response<String>): JsonObject? {
         val gson = Gson()
         return gson.fromJson(callResponse.body(), JsonObject::class.java)
     }
 
-    private fun getAsJsonObject(response: JsonObject): JsonElement? {
-        return response["docs"].asJsonArray[0].asJsonObject["abstract"]
-    }
-
-    private fun artistInfoAbstractToString(abstract: JsonElement, nameArtist: String?): String {
-        return abstract.asString.replace("\\n", "\n")
-    }
-
-    override fun getURL(response: Response<String>): String {
-        val jsonResponse = generateResponse(response)
-        return jsonResponse[DOCS].asJsonArray[0].asJsonObject[WEB_URL].asString
-    }
-
-    private fun generateResponse(response: Response<String>): JsonObject {
+    private fun generateResponse(response: Response<String>): JsonObject? {
         val jObj = getJson(response)
-        return jObj[PROP_RESPONSE].asJsonObject
+        return jObj?.get(PROP_RESPONSE)?.asJsonObject
     }
 
-    override fun generateFormattedResponse(response: Response<String>, nameArtist: String?): String? {
-        val jsonResponse = generateResponse(response)
-        val abstract = getAsJsonObject(jsonResponse)
-        return if (abstract == null)
-            null
-        else
-            artistInfoAbstractToString(abstract, nameArtist)
+    private fun getAsJsonObject(response: JsonObject): JsonElement? {
+        return response[DOCS].asJsonArray[0].asJsonObject["abstract"]
+    }
+
+    private fun artistInfoAbstractToString(abstract: JsonElement): String {
+        return abstract.asString.replace("\\n", "\n")
     }
 
 }

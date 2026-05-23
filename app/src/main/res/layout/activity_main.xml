@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_black"
     tools:context=".home.view.HomeViewActivity">
 
     <EditText
@@ -11,65 +12,114 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:backgroundTint="@color/spotify_green"
         android:hint="@string/song_name"
+        android:textColor="@color/white"
+        android:textColorHint="@color/gray"
         android:importantForAutofill="no"
-        app:layout_constraintBottom_toTopOf="@+id/descriptionTextView"
         app:layout_constraintEnd_toStartOf="@+id/searchButton"
-        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="spread_inside" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@id/searchButton"
+        android:id="@+id/searchButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="@string/search"
+        android:backgroundTint="@color/spotify_green"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@id/descriptionTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text=""
-        app:layout_constraintBottom_toTopOf="@+id/modeDetailsButton"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/termEditText" />
-
-    <Button
-        android:id="@id/modeDetailsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:enabled="false"
-        android:text="@string/more_details"
-        app:layout_constraintEnd_toStartOf="@+id/openSongButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
-
-    <Button
-        android:id="@id/openSongButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:enabled="false"
-        android:text="@string/open_song"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/modeDetailsButton"
-        app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
-
-    <ImageView
-        android:id="@+id/posterImageView"
-        android:layout_width="0dp"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/songCard"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/modeDetailsButton" />
+        app:cardBackgroundColor="@color/card_dark"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonContainer"
+        app:layout_constraintTop_toBottomOf="@id/termEditText">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/posterImageView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintBottom_toTopOf="@+id/infoContainer"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/infoContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/descriptionTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
+                    <ImageView
+                        android:id="@+id/savedImageView"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginTop="4dp"
+                        android:visibility="gone"
+                        android:src="@android:drawable/btn_star_big_on"
+                        app:tint="@color/spotify_green" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <Button
+            android:id="@+id/modeDetailsButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:enabled="false"
+            android:text="@string/more_details"
+            android:textColor="@color/spotify_green"
+            app:strokeColor="@color/spotify_green" />
+
+        <Button
+            android:id="@+id/openSongButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:enabled="false"
+            android:text="@string/open_song"
+            android:backgroundTint="@color/spotify_green"
+            android:textColor="@color/black" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

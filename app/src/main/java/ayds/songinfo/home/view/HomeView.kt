@@ -1,7 +1,8 @@
 package ayds.songinfo.home.view
 
-import android.app.Activity
+import androidx.appcompat.app.AppCompatActivity
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -31,13 +32,14 @@ interface HomeView {
     fun openExternalLink(url: String)
 }
 
-class HomeViewActivity : Activity(), HomeView {
+class HomeViewActivity : AppCompatActivity(), HomeView {
 
     private val onActionSubject = Subject<HomeUiEvent>()
     private lateinit var homeModel: HomeModel
     private val songDescriptionHelper: SongDescriptionHelper = HomeViewInjector.songDescriptionHelper
     private val imageLoader: ImageLoader = UtilsInjector.imageLoader
     private val navigationUtils: NavigationUtils = UtilsInjector.navigationUtils
+    private var mediaPlayer: MediaPlayer? = null
 
     private lateinit var searchButton: Button
     private lateinit var modeDetailsButton: Button
@@ -45,6 +47,7 @@ class HomeViewActivity : Activity(), HomeView {
     private lateinit var termEditText: EditText
     private lateinit var descriptionTextView: TextView
     private lateinit var posterImageView: ImageView
+    private lateinit var savedImageView: ImageView
 
     override val uiEventObservable: Observable<HomeUiEvent> = onActionSubject
     override var uiState: HomeUiState = HomeUiState()
@@ -56,7 +59,26 @@ class HomeViewActivity : Activity(), HomeView {
     }
 
     override fun openExternalLink(url: String) {
-        navigationUtils.openExternalUrl(this, url)
+        if (uiState.songPreviewUrl.isNotEmpty()) {
+            playSong(uiState.songPreviewUrl)
+        } else {
+            navigationUtils.openExternalUrl(this, url)
+        }
+    }
+
+    private fun playSong(url: String) {
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = MediaPlayer().apply {
+            setDataSource(url)
+            prepareAsync()
+            setOnPreparedListener { start() }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer?.release()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +104,7 @@ class HomeViewActivity : Activity(), HomeView {
         termEditText = findViewById(R.id.termEditText)
         descriptionTextView = findViewById(R.id.descriptionTextView)
         posterImageView = findViewById(R.id.posterImageView)
+        savedImageView = findViewById(R.id.savedImageView)
     }
 
     private fun initListeners() {
@@ -135,7 +158,15 @@ class HomeViewActivity : Activity(), HomeView {
         updateUiState(song)
         updateSongDescription()
         updateSongImage()
+        updateSavedIcon()
         updateMoreDetailsState()
+        updateOpenSongButton()
+    }
+
+    private fun updateOpenSongButton() {
+        runOnUiThread {
+            openSongButton.text = if (uiState.songPreviewUrl.isNotEmpty()) "Play Preview" else "Open Song"
+        }
     }
 
     private fun updateUiState(song: Song) {
@@ -151,7 +182,9 @@ class HomeViewActivity : Activity(), HomeView {
             songImageUrl = song.imageUrl,
             songUrl = song.spotifyUrl,
             songDescription = songDescriptionHelper.getSongDescriptionText(song),
-            actionsEnabled = true
+            actionsEnabled = true,
+            isLocallyStored = song.isLocallyStored,
+            songPreviewUrl = song.previewUrl
         )
     }
 
@@ -161,7 +194,9 @@ class HomeViewActivity : Activity(), HomeView {
             songImageUrl = DEFAULT_IMAGE,
             songUrl = "",
             songDescription = songDescriptionHelper.getSongDescriptionText(),
-            actionsEnabled = false
+            actionsEnabled = false,
+            isLocallyStored = false,
+            songPreviewUrl = ""
         )
     }
 
@@ -174,6 +209,12 @@ class HomeViewActivity : Activity(), HomeView {
     private fun updateSongImage() {
         runOnUiThread {
             imageLoader.loadImageIntoView(uiState.songImageUrl, posterImageView)
+        }
+    }
+
+    private fun updateSavedIcon() {
+        runOnUiThread {
+            savedImageView.visibility = if (uiState.isLocallyStored) View.VISIBLE else View.GONE
         }
     }
 

@@ -11,8 +11,13 @@ interface NavigationUtils {
 
 internal class NavigationUtilsImpl: NavigationUtils {
     override fun openExternalUrl(activity: Activity, url: String) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse(url)
-        activity.startActivity(intent)
+        if (url.isEmpty()) return
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse(url)
+            activity.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

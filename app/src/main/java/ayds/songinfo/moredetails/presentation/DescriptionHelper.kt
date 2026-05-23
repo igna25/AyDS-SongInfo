@@ -14,13 +14,10 @@ internal class DescriptionHelperImpl : DescriptionHelper {
     }
 
     private fun getTextBiography(card: Card): String {
-        val prefix = if (card.isLocallyStored) LOCAL_MARKER else ""
-        val text = if (card.description.isEmpty()) NO_RESULTS else card.description.replace("\\n", "\n")
-        return prefix + text
+        return if (card.description.isEmpty()) NO_RESULTS else card.description.replace("\\n", "\n")
     }
 
     companion object {
-        private const val LOCAL_MARKER = "[*]"
         private const val HEADER = "<html><div width=400><font face=\"arial\">"
         private const val FOOTER = "</font></div></html>"
         private const val NO_RESULTS = "No Results"
@@ -34,14 +31,13 @@ internal class DescriptionHelperImpl : DescriptionHelper {
         }
 
         private fun getTextWithBold(text: String, term: String): String {
-            text
+            return text
                 .replace("'", " ")
                 .replace("\n", "<br>")
                 .replace(
                     "(?i)$term".toRegex(),
                     "<b>" + term.uppercase(Locale.getDefault()) + "</b>"
                 )
-            return text
         }
     }
 }

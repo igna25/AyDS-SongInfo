@@ -22,7 +22,7 @@ class DescriptionHelperTest {
         val result = descriptionHelper.getDescription(card)
 
         val expected =
-            "<html><div width=400><font face=\"arial\">[*]bio</font></div></html>"
+            "<html><div width=400><font face=\"arial\">bio</font></div></html>"
 
         assertEquals(expected, result)
     }
@@ -41,7 +41,7 @@ class DescriptionHelperTest {
         val result = descriptionHelper.getDescription(card)
 
         val expected =
-            "<html><div width=400><font face=\"arial\">[*]No Results</font></div></html>"
+            "<html><div width=400><font face=\"arial\">No Results</font></div></html>"
 
         assertEquals(expected, result)
     }

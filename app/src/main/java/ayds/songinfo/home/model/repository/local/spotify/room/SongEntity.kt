@@ -13,5 +13,6 @@ data class SongEntity(
     val releaseDate: String,
     val spotifyUrl: String,
     val imageUrl: String,
-    val releaseDatePrecision: String
+    val releaseDatePrecision: String,
+    val previewUrl: String
 )
